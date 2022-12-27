@@ -2,6 +2,8 @@
 import tkinter as tk
 import time
 import math
+import os
+from tkinter import messagebox
 
 class CountdownTimer:
     def __init__(self, parent):
@@ -79,14 +81,18 @@ class CountdownTimer:
     def createCheckBoxes(self):
         self.checkboxes = []
         self.checkBoxVariables = []
-        self.load_names("C:\\Users\SESA478801\\Documents\\names.txt")
-        for name in self.names:
-            var = tk.IntVar() 
-            checkbox = tk.Checkbutton(self.main_window, text=name, variable=var, font=("Arial", 10), bg="#333",fg="#808080")
-            checkbox.pack()
-            self.checkboxes.append(checkbox)
-            var.set(1)  # set the initial value of the IntVar variable to 1
-            self.checkBoxVariables.append(var)
+        filePathToNamesTextFile=os.path.join(os.getcwd(), 'names.txt')
+        try:
+            self.load_names(filePathToNamesTextFile)
+            for name in self.names:
+                var = tk.IntVar() 
+                checkbox = tk.Checkbutton(self.main_window, text=name, variable=var, font=("Arial", 10), bg="#333",fg="#808080")
+                checkbox.pack()
+                self.checkboxes.append(checkbox)
+                var.set(1)  # set the initial value of the IntVar variable to 1
+                self.checkBoxVariables.append(var)
+        except Exception as e:
+            self.show_warning("the file 'names.txt' in root folder containg the participant names was not found, timer will continue without")
 
     def load_names(self, filepath):
         """Load names from a text file and store them in a list"""
@@ -123,8 +129,9 @@ class CountdownTimer:
             self.countdown_seconds = hours * 3600 + minutes * 60
             self.timeSetInSeconds = self.countdown_seconds
             # Calculate the time interval for each name
-            self.interval = int(math.floor((hours * 3600 + minutes * 60) / len(self.verifiedNames)))
-            self.intervalTimerInSeconds = self.interval
+            if len(self.verifiedNames)!= 0:
+                self.interval = int(math.floor((hours * 3600 + minutes * 60) / len(self.verifiedNames)))
+                self.intervalTimerInSeconds = self.interval
             #self.update_name()
 
         # Enable the pause and reset buttons
@@ -171,21 +178,30 @@ class CountdownTimer:
         self.start_button.config(state="normal")
         self.pause_button.config(state="disabled")
         self.reset_button.config(state="disabled")
+        self.timer_label.configure(fg="#fff")
+        self.timerPerName_label.configure(fg="#fff")
 
     def update_timer(self):
         
         if self.countdown_running :
-            self.update_timer_label()
             if self.countdown_seconds <= self.timeSetInSeconds * 0.1 and not self.timeIsOver:
                self.timeIsCloseToFinish = True
             else:
                self.timeIsCloseToFinish = False
             # Decrement the countdown seconds
             if self.countdown_seconds > 0 and not self.timeIsOver:
-                if (self.countdown_seconds % self.interval == 0) :
-                    self.update_name()
+                if len(self.verifiedNames)!= 0:
+                    if (self.countdown_seconds % self.interval == 0) :
+                      self.update_name()
+                    self.intervalTimerInSeconds = self.intervalTimerInSeconds - 1
+                    # Convert the countdown seconds to hours, minutes, and seconds
+                    hours, remainder = divmod(self.intervalTimerInSeconds, 3600)
+                    minutes, seconds = divmod(remainder, 60)
+                    # Update the timer label
+                    self.timerPerName_label.config(text=f"{hours:02}:{minutes:02}:{seconds:02}")
+
                 self.countdown_seconds -= 1
-                self.intervalTimerInSeconds -= 1
+                
             else:
                 self.timeIsCloseToFinish = False
                 self.timeIsOver = True
@@ -196,13 +212,6 @@ class CountdownTimer:
 
             # Update the timer label
             self.timer_label.config(text=f"{hours:02}:{minutes:02}:{seconds:02}")
-
-            # Convert the countdown seconds to hours, minutes, and seconds
-            hours, remainder = divmod(self.intervalTimerInSeconds, 3600)
-            minutes, seconds = divmod(remainder, 60)
-
-            # Update the timer label
-            self.timerPerName_label.config(text=f"{hours:02}:{minutes:02}:{seconds:02}")
 
             # Schedule the update_timer() function to run again after 1 second
             self.main_window.after(1000, self.update_timer)
@@ -244,6 +253,9 @@ class CountdownTimer:
             #self.main_window.after(int(self.interval * 1000), self.update_name)
             self.intervalTimerInSeconds = int(self.interval)
 
+    def show_warning(self, message):
+        messagebox.showwarning('warning',message)
+
 if __name__ == "__main__":
     
     main_window = tk.Tk()
@@ -253,13 +265,7 @@ if __name__ == "__main__":
     main_window.maxsize(300, 520)
     main_window.attributes("-topmost", True)
     main_window.configure(bg="#333")
-
-    # make a frame for the title bar
-    #title_bar = Frame(main_window, bg="#333", relief='raised', bd=1)
-
-
     main_window.resizable(True, True)
     app = CountdownTimer(main_window)
-    app.load_names("C:\\Users\SESA478801\\Documents\\names.txt")
     main_window.mainloop()
 
