@@ -249,7 +249,8 @@ if __name__ == "__main__":
     main_window = tk.Tk()
 
     main_window.title("M262 Motion Timer")
-    main_window.geometry("300x500")
+    main_window.minsize(200, 70)
+    main_window.maxsize(300, 520)
     main_window.attributes("-topmost", True)
     main_window.configure(bg="#333")
 
