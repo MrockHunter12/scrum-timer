@@ -20,12 +20,20 @@ class CountdownTimer:
         self.timer_label = tk.Label(self.timer_frame, text="00:00:00", font=("Arial", 30), bg="#333", fg="#fff")
         self.timer_label.pack(fill="x", padx=10, pady=5)
 
-        # Create the name label
-        self.name_label = tk.Label(self.main_window, text="", font=("Arial", 14), bg="#333", fg="#fff")
-        self.name_label.pack(fill="x", padx=10, pady=5)
+        # Create the next button
+        self.next_button = tk.Button(self.timer_frame, text="Next", width=10, command=self.next, font=("Arial", 7), bg="#4caf50", fg="#fff")
+        self.next_button.pack(padx=0,pady=0)
+
+        # Create the previous button
+        #self.next_button = tk.Button(self.timer_frame, text="Previous", width=10, command=self.previous, font=("Arial", 7), bg="#4caf50", fg="#fff")
+        #self.next_button.pack(side="left", padx=0,pady=0)
 
         # Create the name label
-        self.timerPerName_label = tk.Label(self.main_window, text="00:00:00", font=("Arial", 14), bg="#333", fg="#fff")
+        self.name_label = tk.Label(self.timer_frame, text="", font=("Arial", 14), bg="#333", fg="#fff")
+        self.name_label.pack(fill="x", padx=10, pady=5)
+
+        # Create the name timer label
+        self.timerPerName_label = tk.Label(self.timer_frame, text="00:00:00", font=("Arial", 14), bg="#333", fg="#fff")
         self.timerPerName_label.pack(fill="x", padx=10, pady=5)
 
         # Create the input frame
@@ -75,6 +83,7 @@ class CountdownTimer:
         self.remaining_seconds = 0
         self.countdown_seconds = 0
         self.timeSetInSeconds  = 0
+        self.numberOfNamesLeft = 0
         self.counter = 0
         self.countdown_running = False
 
@@ -83,7 +92,9 @@ class CountdownTimer:
         self.checkBoxVariables = []
         filePathToNamesTextFile=os.path.join(os.getcwd(), 'names.txt')
         try:
-            self.load_names(filePathToNamesTextFile)
+            #self.load_names(filePathToNamesTextFile)
+            #Todo remove next line
+            self.load_names("D:\\Work\\16_Private\GIT\\scrum-timer\\names.txt")
             for name in self.names:
                 var = tk.IntVar() 
                 checkbox = tk.Checkbutton(self.main_window, text=name, variable=var, font=("Arial", 10), bg="#333",fg="#808080")
@@ -99,7 +110,13 @@ class CountdownTimer:
         with open(filepath, "r") as f:
             self.names = [line.strip() for line in f]
 
-
+    def next(self):
+        if self.numberOfNamesLeft!= 0:
+            self.interval = int(math.floor(self.countdown_seconds/ self.numberOfNamesLeft))
+            self.intervalTimerInSeconds = self.interval
+    
+    #def previous(self):
+        # Todo: exchnage iterator with something that can go back and forward
 
     def start(self):
         self.verifiedNames = []
@@ -129,6 +146,7 @@ class CountdownTimer:
             self.countdown_seconds = hours * 3600 + minutes * 60
             self.timeSetInSeconds = self.countdown_seconds
             # Calculate the time interval for each name
+            self.numberOfNamesLeft = len(self.verifiedNames)
             if len(self.verifiedNames)!= 0:
                 self.interval = int(math.floor((hours * 3600 + minutes * 60) / len(self.verifiedNames)))
                 self.intervalTimerInSeconds = self.interval
@@ -240,6 +258,7 @@ class CountdownTimer:
         if not self.timeIsOver:
             try:
                 # Get the next name from the iterator
+                self.numberOfNamesLeft -=1 
                 name = next(self.name_iter)
             except StopIteration:
                 # If the iterator is exhausted, start again from the beginning
