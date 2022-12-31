@@ -7,14 +7,21 @@ from aiContdownTimerDropDownWithName  import CountdownTimer
 class TestCountdownTimer(unittest.TestCase):
     def setUp(self):
         # Create a dummy tkinter window to use as the parent for the CountdownTimer object
-        self.root = tk.Tk()
+        self.main_window = tk.Tk()
+
+        self.main_window.title("M262 Motion Timer")
+        self.main_window.minsize(200, 70)
+        self.main_window.maxsize(300, 520)
+        self.main_window.attributes("-topmost", True)
+        self.main_window.configure(bg="#333")
+        self.main_window.resizable(True, True)
 
         # Create an instance of the CountdownTimer class
-        self.countdown_timer = CountdownTimer(self.root)
+        self.countdown_timer = CountdownTimer(self.main_window)
     
     def tearDown(self):
         # Destroy the window created in the setUp method
-        self.root.destroy()
+        self.main_window.destroy()
 
     def test_next(self):
         self.countdown_timer.verifiedNames = ["person1","person2","person3","person4"]
