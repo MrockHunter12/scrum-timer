@@ -7,7 +7,7 @@ from aiContdownTimerDropDownWithName  import CountdownTimer
 class TestCountdownTimer(unittest.TestCase):
     def setUp(self):
         # Create a dummy tkinter window to use as the parent for the CountdownTimer object
-        self.main_window = tk.Tk()
+        self.main_window = tk.Tk().withdraw()
 
         self.main_window.title("M262 Motion Timer")
         self.main_window.minsize(200, 70)
