@@ -20,12 +20,20 @@ class CountdownTimer:
         self.timer_label = tk.Label(self.timer_frame, text="00:00:00", font=("Arial", 30), bg="#333", fg="#fff")
         self.timer_label.pack(fill="x", padx=10, pady=5)
 
-        # Create the name label
-        self.name_label = tk.Label(self.main_window, text="", font=("Arial", 14), bg="#333", fg="#fff")
-        self.name_label.pack(fill="x", padx=10, pady=5)
+        # Create the next button
+        self.next_button = tk.Button(self.timer_frame, text="Next", width=10, command=self.next, font=("Arial", 7), bg="#4caf50", fg="#fff")
+        self.next_button.pack(side="right",padx=0,pady=0)
+
+        # Create the previous button
+        self.next_button = tk.Button(self.timer_frame, text="Previous", width=10, command=self.previous, font=("Arial", 7), bg="#4caf50", fg="#fff")
+        self.next_button.pack(side="left", padx=0,pady=0)
 
         # Create the name label
-        self.timerPerName_label = tk.Label(self.main_window, text="00:00:00", font=("Arial", 14), bg="#333", fg="#fff")
+        self.name_label = tk.Label(self.timer_frame, text="", font=("Arial", 14), bg="#333", fg="#fff")
+        self.name_label.pack(fill="x", padx=10, pady=5)
+
+        # Create the name timer label
+        self.timerPerName_label = tk.Label(self.timer_frame, text="00:00:00", font=("Arial", 14), bg="#333", fg="#fff")
         self.timerPerName_label.pack(fill="x", padx=10, pady=5)
 
         # Create the input frame
@@ -75,8 +83,10 @@ class CountdownTimer:
         self.remaining_seconds = 0
         self.countdown_seconds = 0
         self.timeSetInSeconds  = 0
+        self.numberOfNamesLeft = 0
         self.counter = 0
         self.countdown_running = False
+        self.firstExecution = True
 
     def createCheckBoxes(self):
         self.checkboxes = []
@@ -99,15 +109,31 @@ class CountdownTimer:
         with open(filepath, "r") as f:
             self.names = [line.strip() for line in f]
 
-
-
+    def next(self):
+        if self.numberOfNamesLeft> 0:
+            self.update_name()
+            self.interval = int(math.floor(self.countdown_seconds/ self.numberOfNamesLeft))
+            self.intervalTimerInSeconds = self.interval
+    
+    
+    def previous(self):
+        if self.currentIndex > 0:
+            self.currentIndex = self.currentIndex -1
+            self.numberOfNamesLeft = self.numberOfNamesLeft +1
+            self.interval = int(math.floor(self.countdown_seconds/ self.numberOfNamesLeft))
+            self.intervalTimerInSeconds = self.interval
+            name = self.verifiedNames[self.currentIndex]
+            self.name_label.configure(text=name)
+            self.intervalTimerInSeconds = int(self.interval)
     def start(self):
+        self.firstExecution = True
         self.verifiedNames = []
         for i, checkBoxVariable in enumerate(self.checkBoxVariables):
             if checkBoxVariable.get():  # check if the checkbox is active
                 name = self.checkboxes[i].cget("text")
                 self.verifiedNames.append(name)  # store
-        self.name_iter = iter(self.verifiedNames)  # create iterator for names list
+        #self.name_iter = iter(self.verifiedNames)  # create iterator for names list
+        self.currentIndex = 0
         # If the timer was previously paused, use the remaining time as the countdown time
         if  self.countdown_seconds > 0:
             self.countdown_seconds =  self.countdown_seconds
@@ -129,10 +155,13 @@ class CountdownTimer:
             self.countdown_seconds = hours * 3600 + minutes * 60
             self.timeSetInSeconds = self.countdown_seconds
             # Calculate the time interval for each name
+            self.numberOfNamesLeft = len(self.verifiedNames)
             if len(self.verifiedNames)!= 0:
                 self.interval = int(math.floor((hours * 3600 + minutes * 60) / len(self.verifiedNames)))
                 self.intervalTimerInSeconds = self.interval
-            #self.update_name()
+            name = self.verifiedNames[self.currentIndex]
+            self.name_label.configure(text=name)
+            self.intervalTimerInSeconds = int(self.interval)
 
         # Enable the pause and reset buttons
         self.pause_button.config(state="normal")
@@ -182,16 +211,15 @@ class CountdownTimer:
         self.timerPerName_label.configure(fg="#fff")
 
     def update_timer(self):
-        
-        if self.countdown_running :
+        if self.countdown_running and not self.firstExecution:
             if self.countdown_seconds <= self.timeSetInSeconds * 0.1 and not self.timeIsOver:
                self.timeIsCloseToFinish = True
             else:
                self.timeIsCloseToFinish = False
             # Decrement the countdown seconds
             if self.countdown_seconds > 0 and not self.timeIsOver:
-                if len(self.verifiedNames)!= 0:
-                    if (self.countdown_seconds % self.interval == 0) :
+                if len(self.verifiedNames)!= 0 and self.interval!=0:
+                    if self.intervalTimerInSeconds <=0 :
                       self.update_name()
                     self.intervalTimerInSeconds = self.intervalTimerInSeconds - 1
                     # Convert the countdown seconds to hours, minutes, and seconds
@@ -214,8 +242,11 @@ class CountdownTimer:
             self.timer_label.config(text=f"{hours:02}:{minutes:02}:{seconds:02}")
 
             # Schedule the update_timer() function to run again after 1 second
-            self.main_window.after(1000, self.update_timer)
             self.update_timer_label()
+            self.main_window.after(1000, self.update_timer)
+        elif self.countdown_running and self.firstExecution:
+            self.firstExecution = False
+            self.main_window.after(1000, self.update_timer)
         else:
             # Countdown has finished, disable the pause and reset buttons
             self.pause_button.config(state="disabled")
@@ -240,17 +271,20 @@ class CountdownTimer:
         if not self.timeIsOver:
             try:
                 # Get the next name from the iterator
-                name = next(self.name_iter)
-            except StopIteration:
-                # If the iterator is exhausted, start again from the beginning
-                self.name_iter = iter(self.verifiedNames)
-                name = next(self.name_iter)
+                self.numberOfNamesLeft -=1 
+                #name = next(self.name_iter)
+                if self.currentIndex < len(self.verifiedNames)-1:
+                    self.currentIndex += 1
+                    name = self.verifiedNames[self.currentIndex]
+                    self.name_label.configure(text=name)
+            except:
+                # If the iterator is exhausted, stay
+                name = self.verifiedNames[self.currentIndex]
 
             # Update the name label
-            self.name_label.configure(text=name)
+            
 
             # Call this method again after the interval
-            #self.main_window.after(int(self.interval * 1000), self.update_name)
             self.intervalTimerInSeconds = int(self.interval)
 
     def show_warning(self, message):
