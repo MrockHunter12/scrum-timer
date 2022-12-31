@@ -36,6 +36,10 @@ class CountdownTimer:
         self.timerPerName_label = tk.Label(self.timer_frame, text="00:00:00", font=("Arial", 14), bg="#333", fg="#fff")
         self.timerPerName_label.pack(fill="x", padx=10, pady=5)
 
+        # Create the timer interval per avergae
+        self.timerPerNameAvgInSeconds = tk.Label(self.timer_frame, text="00:00:00", font=("Arial", 12), bg="#333", fg="#7AC5CD")
+        self.timerPerNameAvgInSeconds.pack(fill="x", padx=10, pady=5)
+
         # Create the input frame
         self.input_frame = tk.Frame(self.main_window, bg="#333", bd=5)
         self.input_frame.pack(fill="x", padx=10, pady=5)
@@ -110,10 +114,21 @@ class CountdownTimer:
             self.names = [line.strip() for line in f]
 
     def next(self):
-        if self.numberOfNamesLeft> 0:
+        if self.numberOfNamesLeft> 1:
             self.update_name()
-            self.interval = int(math.floor(self.countdown_seconds/ self.numberOfNamesLeft))
-            self.intervalTimerInSeconds = self.interval
+            if  self.numberOfNamesLeft != 0:
+                self.interval = int(math.floor(self.countdown_seconds/ self.numberOfNamesLeft))
+                self.intervalTimerInSeconds = self.interval
+                # Convert the countdown seconds to hours, minutes, and seconds
+                hours, remainder = divmod(self.interval, 3600)
+                minutes, seconds = divmod(remainder, 60)
+                self.timerPerNameAvgInSeconds.config(text=f"{hours:02}:{minutes:02}:{seconds:02}")
+
+                # Convert the countdown seconds to hours, minutes, and seconds
+                hours, remainder = divmod(self.intervalTimerInSeconds, 3600)
+                minutes, seconds = divmod(remainder, 60)
+                # Update the timer label
+                self.timerPerName_label.config(text=f"{hours:02}:{minutes:02}:{seconds:02}")
     
     
     def previous(self):
@@ -124,7 +139,19 @@ class CountdownTimer:
             self.intervalTimerInSeconds = self.interval
             name = self.verifiedNames[self.currentIndex]
             self.name_label.configure(text=name)
+            #self.timerPerNameAvgInSeconds.configure(text=self.interval)
             self.intervalTimerInSeconds = int(self.interval)
+            # Convert the countdown seconds to hours, minutes, and seconds
+            hours, remainder = divmod(self.interval, 3600)
+            minutes, seconds = divmod(remainder, 60)
+            self.timerPerNameAvgInSeconds.config(text=f"{hours:02}:{minutes:02}:{seconds:02}")
+
+            # Convert the countdown seconds to hours, minutes, and seconds
+            hours, remainder = divmod(self.intervalTimerInSeconds, 3600)
+            minutes, seconds = divmod(remainder, 60)
+            # Update the timer label
+            self.timerPerName_label.config(text=f"{hours:02}:{minutes:02}:{seconds:02}")
+            
     def start(self):
         self.firstExecution = True
         self.verifiedNames = []
@@ -199,6 +226,7 @@ class CountdownTimer:
         # Update the timer label
         self.timer_label.config(text="00:00:00")
         self.timerPerName_label.config(text="00:00:00")
+        self.timerPerNameAvgInSeconds.config(text="00:00:00")
         self.name_label.configure(text="")
         self.countdown_seconds = 0
         self.intervalTimerInSeconds = 0
@@ -209,6 +237,7 @@ class CountdownTimer:
         self.reset_button.config(state="disabled")
         self.timer_label.configure(fg="#fff")
         self.timerPerName_label.configure(fg="#fff")
+        self.timerPerNameAvgInSeconds.configure(fg="#fff")
 
     def update_timer(self):
         if self.countdown_running and not self.firstExecution:
@@ -227,6 +256,11 @@ class CountdownTimer:
                     minutes, seconds = divmod(remainder, 60)
                     # Update the timer label
                     self.timerPerName_label.config(text=f"{hours:02}:{minutes:02}:{seconds:02}")
+                    # Convert the countdown seconds to hours, minutes, and seconds
+                    hours, remainder = divmod(self.interval, 3600)
+                    minutes, seconds = divmod(remainder, 60)
+                    self.timerPerNameAvgInSeconds.config(text=f"{hours:02}:{minutes:02}:{seconds:02}")
+
 
                 self.countdown_seconds -= 1
                 
@@ -261,6 +295,7 @@ class CountdownTimer:
         elif self.timeIsOver:
             self.timer_label.configure(fg="#FF0000")
             self.timerPerName_label.config(text="time is over")
+            self.timerPerNameAvgInSeconds.config(text="")
             self.name_label.config(text="")
             self.timerPerName_label.configure(fg="#FF0000")
         else:
