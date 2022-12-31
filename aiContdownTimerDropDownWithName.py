@@ -25,8 +25,8 @@ class CountdownTimer:
         self.next_button.pack(side="right",padx=0,pady=0)
 
         # Create the previous button
-        self.next_button = tk.Button(self.timer_frame, text="Previous", width=10, command=self.previous, font=("Arial", 7), bg="#4caf50", fg="#fff")
-        self.next_button.pack(side="left", padx=0,pady=0)
+        self.next_previous = tk.Button(self.timer_frame, text="Previous", width=10, command=self.previous, font=("Arial", 7), bg="#4caf50", fg="#fff")
+        self.next_previous.pack(side="left", padx=0,pady=0)
 
         # Create the name label
         self.name_label = tk.Label(self.timer_frame, text="", font=("Arial", 14), bg="#333", fg="#fff")
@@ -115,71 +115,83 @@ class CountdownTimer:
         with open(filepath, "r") as f:
             self.names = [line.strip() for line in f]
 
+    def updateSubTimers(self):
+        # Convert the countdown seconds to hours, minutes, and seconds
+        hours, remainder = divmod(self.interval, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        self.timerPerNameAvgInSeconds.config(text=f"{hours:02}:{minutes:02}:{seconds:02}")
+
+        # Convert the countdown seconds to hours, minutes, and seconds
+        hours, remainder = divmod(self.intervalTimerInSeconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        # Update the timer label
+        self.timerPerName_label.config(text=f"{hours:02}:{minutes:02}:{seconds:02}")
+
     def next(self):
         if self.numberOfNamesLeft> 1:
-            self.update_name()
+            self.updateCurrentNameAndTrackNumberOfNamesLeft()
             if  self.numberOfNamesLeft != 0:
-                self.interval = int(math.floor(self.countdown_seconds/ self.numberOfNamesLeft))
-                self.intervalTimerInSeconds = self.interval
-                # Convert the countdown seconds to hours, minutes, and seconds
-                hours, remainder = divmod(self.interval, 3600)
-                minutes, seconds = divmod(remainder, 60)
-                self.timerPerNameAvgInSeconds.config(text=f"{hours:02}:{minutes:02}:{seconds:02}")
-
-                # Convert the countdown seconds to hours, minutes, and seconds
-                hours, remainder = divmod(self.intervalTimerInSeconds, 3600)
-                minutes, seconds = divmod(remainder, 60)
-                # Update the timer label
-                self.timerPerName_label.config(text=f"{hours:02}:{minutes:02}:{seconds:02}")
+                self.calculateNewIntervalAndUpdateTimerInSeconds()
+                self.updateSubTimers()
     
     
     def previous(self):
         if self.currentIndex > 0:
             self.currentIndex = self.currentIndex -1
             self.numberOfNamesLeft = self.numberOfNamesLeft +1
-            self.interval = int(math.floor(self.countdown_seconds/ self.numberOfNamesLeft))
-            self.intervalTimerInSeconds = self.interval
+            self.calculateNewIntervalAndUpdateTimerInSeconds()
             name = self.verifiedNames[self.currentIndex]
             self.name_label.configure(text=name)
-            #self.timerPerNameAvgInSeconds.configure(text=self.interval)
             self.intervalTimerInSeconds = int(self.interval)
-            # Convert the countdown seconds to hours, minutes, and seconds
-            hours, remainder = divmod(self.interval, 3600)
-            minutes, seconds = divmod(remainder, 60)
-            self.timerPerNameAvgInSeconds.config(text=f"{hours:02}:{minutes:02}:{seconds:02}")
+            self.updateSubTimers()
+    
+    def calculateNewIntervalAndUpdateTimerInSeconds(self):
+        self.interval = int(math.floor(self.countdown_seconds/ self.numberOfNamesLeft))
+        self.intervalTimerInSeconds = self.interval
 
-            # Convert the countdown seconds to hours, minutes, and seconds
-            hours, remainder = divmod(self.intervalTimerInSeconds, 3600)
-            minutes, seconds = divmod(remainder, 60)
-            # Update the timer label
-            self.timerPerName_label.config(text=f"{hours:02}:{minutes:02}:{seconds:02}")
+    def checkboxEvaluation(self, checkboxVariables, checkboxes):
+        names = []
+        for i, checkBoxVariable in enumerate(checkboxVariables):
+            if checkBoxVariable.get():  # check if the checkbox is active
+                name = checkboxes[i].cget("text")
+                names.append(name)  # store
+        return names
+    
+    def validateMinutesInput(self, minutes_str):
+        if minutes_str.isdigit():
+            minutes = int(minutes_str)
+        else:
+            minutes = 0
+        return minutes_str
+
+    def validateHoursInput(self, hours_str):
+        if hours_str.isdigit():
+            minutes = int(hours_str)
+        else:
+            minutes = 0
+        return hours_str
+
+    def disableNextAndPreviousButtons(self):
+        self.next_button.config(state="disabled")
+        self.next_previous.config(state="disabled")
+
+    def EnableNextAndPreviousButtons(self):
+        self.next_button.config(state="normal")
+        self.next_previous.config(state="normal")
+            
             
     def start(self):
         self.firstExecution = True
         self.verifiedNames = []
-        for i, checkBoxVariable in enumerate(self.checkBoxVariables):
-            if checkBoxVariable.get():  # check if the checkbox is active
-                name = self.checkboxes[i].cget("text")
-                self.verifiedNames.append(name)  # store
-        #self.name_iter = iter(self.verifiedNames)  # create iterator for names list
+        self.verifiedNames = self.checkboxEvaluation(self.checkBoxVariables, self.checkboxes)
         self.currentIndex = 0
         # If the timer was previously paused, use the remaining time as the countdown time
         if  self.countdown_seconds > 0:
             self.countdown_seconds =  self.countdown_seconds
         else:
             # Get the input time
-            hours_str = self.hours_entry.get()
-            minutes_str = self.minutes_entry.get()
-
-            # Validate the input
-            if minutes_str.isdigit():
-                minutes = int(minutes_str)
-            else:
-                minutes = 0
-            if hours_str.isdigit() :
-                hours = int(hours_str)
-            else:
-                hours = 0
+            hours = int(self.validateHoursInput(self.hours_entry.get()))
+            minutes = int(self.validateMinutesInput(self.minutes_entry.get()))
             # Convert the input time to seconds
             self.countdown_seconds = hours * 3600 + minutes * 60
             self.timeSetInSeconds = self.countdown_seconds
@@ -188,22 +200,23 @@ class CountdownTimer:
             if len(self.verifiedNames)!= 0:
                 self.interval = int(math.floor((hours * 3600 + minutes * 60) / len(self.verifiedNames)))
                 self.intervalTimerInSeconds = self.interval
-            name = self.verifiedNames[self.currentIndex]
-            self.name_label.configure(text=name)
-            self.intervalTimerInSeconds = int(self.interval)
+
+                name = self.verifiedNames[self.currentIndex]
+                self.name_label.configure(text=name)
+                self.intervalTimerInSeconds = int(self.interval)
+
 
         # Enable the pause and reset buttons
         self.pause_button.config(state="normal")
         self.reset_button.config(state="normal")
+
+        self.EnableNextAndPreviousButtons()
 
         # Disable the start button
         self.start_button.config(state="disabled")
 
         # Set the countdown running flag to True
         self.countdown_running = True
-
-        # Calculate the time interval for each name
-        #self.interval = (hours * 3600 + minutes * 60) / len(self.verifiedNames)
 
         # Update the timer label
         self.update_timer()
@@ -223,7 +236,6 @@ class CountdownTimer:
         # Clear the input entries
         self.hours_entry.set("0")
         self.minutes_entry.set("0")
-        #self.name_iter = iter(self.verifiedNames)
 
         # Update the timer label
         self.timer_label.config(text="00:00:00")
@@ -237,9 +249,10 @@ class CountdownTimer:
         self.start_button.config(state="normal")
         self.pause_button.config(state="disabled")
         self.reset_button.config(state="disabled")
+        self.disableNextAndPreviousButtons()
         self.timer_label.configure(fg="#fff")
         self.timerPerName_label.configure(fg="#fff")
-        self.timerPerNameAvgInSeconds.configure(fg="#fff")
+        self.timerPerNameAvgInSeconds.configure(fg="#7AC5CD")
 
     def update_timer(self):
         if self.countdown_running and not self.firstExecution:
@@ -251,24 +264,15 @@ class CountdownTimer:
             if self.countdown_seconds > 0 and not self.timeIsOver:
                 if len(self.verifiedNames)!= 0 and self.interval!=0:
                     if self.intervalTimerInSeconds <=0 :
-                      self.update_name()
+                      self.updateCurrentNameAndTrackNumberOfNamesLeft()
                     self.intervalTimerInSeconds = self.intervalTimerInSeconds - 1
-                    # Convert the countdown seconds to hours, minutes, and seconds
-                    hours, remainder = divmod(self.intervalTimerInSeconds, 3600)
-                    minutes, seconds = divmod(remainder, 60)
-                    # Update the timer label
-                    self.timerPerName_label.config(text=f"{hours:02}:{minutes:02}:{seconds:02}")
-                    # Convert the countdown seconds to hours, minutes, and seconds
-                    hours, remainder = divmod(self.interval, 3600)
-                    minutes, seconds = divmod(remainder, 60)
-                    self.timerPerNameAvgInSeconds.config(text=f"{hours:02}:{minutes:02}:{seconds:02}")
-
-
+                    self.updateSubTimers()
                 self.countdown_seconds -= 1
                 
             else:
                 self.timeIsCloseToFinish = False
                 self.timeIsOver = True
+                self.disableNextAndPreviousButtons()
                 self.countdown_seconds += 1
             # Convert the countdown seconds to hours, minutes, and seconds
             hours, remainder = divmod(self.countdown_seconds, 3600)
@@ -303,13 +307,12 @@ class CountdownTimer:
         else:
             self.timer_label.configure(fg="#fff")
 
-    def update_name(self):
+    def updateCurrentNameAndTrackNumberOfNamesLeft(self):
         # Update the name label every interval
         if not self.timeIsOver:
             try:
                 # Get the next name from the iterator
                 self.numberOfNamesLeft -=1 
-                #name = next(self.name_iter)
                 if self.currentIndex < len(self.verifiedNames)-1:
                     self.currentIndex += 1
                     name = self.verifiedNames[self.currentIndex]
@@ -317,10 +320,6 @@ class CountdownTimer:
             except:
                 # If the iterator is exhausted, stay
                 name = self.verifiedNames[self.currentIndex]
-
-            # Update the name label
-            
-
             # Call this method again after the interval
             self.intervalTimerInSeconds = int(self.interval)
 
