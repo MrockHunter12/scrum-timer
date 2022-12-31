@@ -89,6 +89,8 @@ class CountdownTimer:
         self.timeSetInSeconds  = 0
         self.numberOfNamesLeft = 0
         self.counter = 0
+        self.intervalTimerInSeconds = 0
+        self.interval = 0
         self.countdown_running = False
         self.firstExecution = True
 
