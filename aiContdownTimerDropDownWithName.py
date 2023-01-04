@@ -116,16 +116,14 @@ class CountdownTimer:
             self.names = [line.strip() for line in f]
 
     def updateSubTimers(self):
-        # Convert the countdown seconds to hours, minutes, and seconds
-        hours, remainder = divmod(self.interval, 3600)
-        minutes, seconds = divmod(remainder, 60)
-        self.timerPerNameAvgInSeconds.config(text=f"{hours:02}:{minutes:02}:{seconds:02}")
+        self.updateTimer(self.interval, self.timerPerNameAvgInSeconds)
+        self.updateTimer(self.intervalTimerInSeconds, self.timerPerName_label)
 
+    def updateTimer(self, timeVariableInSeconds, label):
         # Convert the countdown seconds to hours, minutes, and seconds
-        hours, remainder = divmod(self.intervalTimerInSeconds, 3600)
+        hours, remainder = divmod(timeVariableInSeconds, 3600)
         minutes, seconds = divmod(remainder, 60)
-        # Update the timer label
-        self.timerPerName_label.config(text=f"{hours:02}:{minutes:02}:{seconds:02}")
+        label.config(text=f"{hours:02}:{minutes:02}:{seconds:02}")
 
     def next(self):
         if self.numberOfNamesLeft> 1:
@@ -162,14 +160,14 @@ class CountdownTimer:
             minutes = int(minutes_str)
         else:
             minutes = 0
-        return minutes_str
+        return minutes
 
     def validateHoursInput(self, hours_str):
         if hours_str.isdigit():
-            minutes = int(hours_str)
+            hours = int(hours_str)
         else:
-            minutes = 0
-        return hours_str
+            hours = 0
+        return hours
 
     def disableNextAndPreviousButtons(self):
         self.next_button.config(state="disabled")
@@ -190,8 +188,8 @@ class CountdownTimer:
             self.countdown_seconds =  self.countdown_seconds
         else:
             # Get the input time
-            hours = int(self.validateHoursInput(self.hours_entry.get()))
-            minutes = int(self.validateMinutesInput(self.minutes_entry.get()))
+            hours = self.validateHoursInput(self.hours_entry.get())
+            minutes = self.validateMinutesInput(self.minutes_entry.get())
             # Convert the input time to seconds
             self.countdown_seconds = hours * 3600 + minutes * 60
             self.timeSetInSeconds = self.countdown_seconds
@@ -204,7 +202,6 @@ class CountdownTimer:
                 name = self.verifiedNames[self.currentIndex]
                 self.name_label.configure(text=name)
                 self.intervalTimerInSeconds = int(self.interval)
-
 
         # Enable the pause and reset buttons
         self.pause_button.config(state="normal")
@@ -275,11 +272,7 @@ class CountdownTimer:
                 self.disableNextAndPreviousButtons()
                 self.countdown_seconds += 1
             # Convert the countdown seconds to hours, minutes, and seconds
-            hours, remainder = divmod(self.countdown_seconds, 3600)
-            minutes, seconds = divmod(remainder, 60)
-
-            # Update the timer label
-            self.timer_label.config(text=f"{hours:02}:{minutes:02}:{seconds:02}")
+            self.updateTimer(self.countdown_seconds, self.timer_label)
 
             # Schedule the update_timer() function to run again after 1 second
             self.update_timer_label()
