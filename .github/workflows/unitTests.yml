@@ -32,7 +32,7 @@ jobs:
         run: sudo apt-get install -y xvfb
       - name: Test with pytest
         run: |
-          pytest -v
+          pytest -v --junitxml
       - name: Test coverage
         run: |
           pytest --cov=aiContdownTimerDropDownWithName
@@ -42,12 +42,8 @@ jobs:
         with:
           name: coverage-report
           path: htmlcov/*
-      - name: Get HTML preview link
-        id: html_preview
-        uses: pavi2410/html-preview-action@v2 # NOTE: replace with the latest version of this Action
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
         with:
-          html_file: 'htmlcov/index.html'
-      - uses: github-actions-up-and-running/pr-comment@v1.0.0
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          message: ${{ format('[Click here to preview HTML page in browser]({0})', steps.html_preview.outputs.url) }}
+          junit_files: "test-results/junit/**/*.xml"
