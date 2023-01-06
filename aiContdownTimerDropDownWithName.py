@@ -11,41 +11,45 @@ class CountdownTimer:
         self.timeIsCloseToFinish = False
         self.main_window = parent
         self.verifiedNames=[]
+        self.darkGrayCoroCode= "#333"
+        self.lightGreenColorCode = "#4caf50"
+        self.blueColorCode = "#2196f3"
+        self.redColorCode = "#f44336"
 
         # Create the timer frame
-        self.timer_frame = tk.Frame(self.main_window, bg="#333", bd=5)
+        self.timer_frame = tk.Frame(self.main_window, bg=self.darkGrayCoroCode, bd=5)
         self.timer_frame.pack(fill="x", padx=10, pady=5)
 
         # Create the timer label
-        self.timer_label = tk.Label(self.timer_frame, text="00:00:00", font=("Arial", 30), bg="#333", fg="white")
+        self.timer_label = tk.Label(self.timer_frame, text="00:00:00", font=("Arial", 30), bg=self.darkGrayCoroCode, fg="white")
         self.timer_label.pack(fill="x", padx=10, pady=5)
 
         # Create the next button
-        self.next_button = tk.Button(self.timer_frame, text="Next", width=10, command=self.next, font=("Arial", 7), bg="#4caf50", fg="white")
+        self.next_button = tk.Button(self.timer_frame, text="Next", width=10, command=self.next, font=("Arial", 7), bg=self.lightGreenColorCode, fg="white")
         self.next_button.pack(side="right",padx=0,pady=0)
 
         # Create the previous button
-        self.next_previous = tk.Button(self.timer_frame, text="Previous", width=10, command=self.previous, font=("Arial", 7), bg="#4caf50", fg="white")
+        self.next_previous = tk.Button(self.timer_frame, text="Previous", width=10, command=self.previous, font=("Arial", 7), bg=self.lightGreenColorCode, fg="white")
         self.next_previous.pack(side="left", padx=0,pady=0)
 
         # Create the name label
-        self.name_label = tk.Label(self.timer_frame, text="", font=("Arial", 14), bg="#333", fg="white")
+        self.name_label = tk.Label(self.timer_frame, text="", font=("Arial", 14), bg=self.darkGrayCoroCode, fg="white")
         self.name_label.pack(fill="x", padx=10, pady=5)
 
         # Create the name timer label
-        self.timerPerName_label = tk.Label(self.timer_frame, text="00:00:00", font=("Arial", 14), bg="#333", fg="white")
+        self.timerPerName_label = tk.Label(self.timer_frame, text="00:00:00", font=("Arial", 14), bg=self.darkGrayCoroCode, fg="white")
         self.timerPerName_label.pack(fill="x", padx=10, pady=5)
 
         # Create the timer interval per avergae
-        self.timerPerNameAvgInSeconds = tk.Label(self.timer_frame, text="00:00:00", font=("Arial", 12), bg="#333", fg="cyan")
+        self.timerPerNameAvgInSeconds = tk.Label(self.timer_frame, text="00:00:00", font=("Arial", 12), bg=self.darkGrayCoroCode, fg="cyan")
         self.timerPerNameAvgInSeconds.pack(fill="x", padx=10, pady=5)
 
         # Create the input frame
-        self.input_frame = tk.Frame(self.main_window, bg="#333", bd=5)
+        self.input_frame = tk.Frame(self.main_window, bg=self.darkGrayCoroCode, bd=5)
         self.input_frame.pack(fill="x", padx=10, pady=5)
 
         # Create the input labels
-        tk.Label(self.input_frame, text="Hours:", font=("Arial", 14), bg="#333", fg="white").pack(side="left")
+        tk.Label(self.input_frame, text="Hours:", font=("Arial", 14), bg=self.darkGrayCoroCode, fg="white").pack(side="left")
 
         # Create the hours drop-down menu
         self.hours_entry = tk.StringVar(self.input_frame)
@@ -53,7 +57,7 @@ class CountdownTimer:
         self.hours_menu = tk.OptionMenu(self.input_frame, self.hours_entry, "0", "1", "2", "3", "4", "5")
         self.hours_menu.pack(side="left")
 
-        tk.Label(self.input_frame, text="Minutes:", font=("Arial", 14), bg="#333", fg="white").pack(side="left")
+        tk.Label(self.input_frame, text="Minutes:", font=("Arial", 14), bg=self.darkGrayCoroCode, fg="white").pack(side="left")
 
         # Create the minutes drop-down menu
         self.minutes_entry = tk.StringVar(self.input_frame)
@@ -62,23 +66,23 @@ class CountdownTimer:
         self.minutes_menu.pack(side="left")
 
         # Modify the style of the OptionMenu widgets to a dark mode theme
-        self.hours_menu["menu"].configure(foreground="white", background="#333")
-        self.minutes_menu["menu"].configure(foreground="white", background="#333")
+        self.hours_menu["menu"].configure(foreground="white", background=self.darkGrayCoroCode)
+        self.minutes_menu["menu"].configure(foreground="white", background=self.darkGrayCoroCode)
 
         # Create the control frame
-        self.control_frame = tk.Frame(self.main_window, bg="#333", bd=5)
+        self.control_frame = tk.Frame(self.main_window, bg=self.darkGrayCoroCode, bd=5)
         self.control_frame.pack(fill="x", padx=10, pady=5)
 
         # Create the start button
-        self.start_button = tk.Button(self.control_frame, text="Start", width=10, command=self.start, font=("Arial", 7), bg="#4caf50", fg="white")
+        self.start_button = tk.Button(self.control_frame, text="Start", width=10, command=self.start, font=("Arial", 7), bg=self.lightGreenColorCode, fg="white")
         self.start_button.pack(side="left", padx=10)
         
         # Create the pause button
-        self.pause_button = tk.Button(self.control_frame, text="Pause", width=10, command=self.pause, state="disabled", font=("Arial", 7), bg="#2196f3", fg="white")
+        self.pause_button = tk.Button(self.control_frame, text="Pause", width=10, command=self.pause, state="disabled", font=("Arial", 7), bg=self.blueColorCode, fg="white")
         self.pause_button.pack(side="left", padx=10)
 
         # Create the reset button
-        self.reset_button = tk.Button(self.control_frame, text="Reset", width=10, command=self.reset, state="disabled", font=("Arial", 7), bg="#f44336", fg="white")
+        self.reset_button = tk.Button(self.control_frame, text="Reset", width=10, command=self.reset, state="disabled", font=("Arial", 7), bg=self.redColorCode, fg="white")
         self.reset_button.pack(side="left", padx=10)
 
         self.createCheckBoxes()
@@ -102,7 +106,7 @@ class CountdownTimer:
             self.load_names(filePathToNamesTextFile)
             for name in self.names:
                 var = tk.IntVar() 
-                checkbox = tk.Checkbutton(self.main_window, text=name, variable=var, font=("Arial", 10), bg="#333",fg="#808080")
+                checkbox = tk.Checkbutton(self.main_window, text=name, variable=var, font=("Arial", 10), bg=self.darkGrayCoroCode,fg="gray")
                 checkbox.pack()
                 self.checkboxes.append(checkbox)
                 var.set(1)  # set the initial value of the IntVar variable to 1
@@ -321,14 +325,14 @@ class CountdownTimer:
         messagebox.showwarning('warning',message)
 
 if __name__ == "__main__":
-    
+    darkGrayCoroCode= "#333"
     main_window = tk.Tk()
 
     main_window.title("M262 Motion Timer")
     main_window.minsize(200, 70)
     main_window.maxsize(300, 520)
     main_window.attributes("-topmost", True)
-    main_window.configure(bg="#333")
+    main_window.configure(bg=darkGrayCoroCode)
     main_window.resizable(True, True)
     app = CountdownTimer(main_window)
     main_window.mainloop()
