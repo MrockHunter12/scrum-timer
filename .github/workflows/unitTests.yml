@@ -47,3 +47,9 @@ jobs:
         if: always()
         with:
           junit_files: "test_results.xml"
+      - name: Create or update coverage report file
+        uses: actions/create-or-update-file@v1
+        with:
+          path: coverage-report.html
+          content: |
+            $(cat htmlcov/index.html)
