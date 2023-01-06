@@ -36,7 +36,7 @@ jobs:
       - name: Test coverage
         run: |
           pytest --cov=aiContdownTimerDropDownWithName
-          pytest --cov=app --cov-report=html
+          pytest --cov=aiContdownTimerDropDownWithName --cov-report=html
       - name: Save coverage report as artifact
         uses: actions/upload-artifact@v2
         with:
