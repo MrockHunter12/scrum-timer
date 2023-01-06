@@ -20,7 +20,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install flake8 pytest
-          pip install coverage
+          pip install pytest-cov
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Lint with flake8
         run: |
@@ -35,9 +35,8 @@ jobs:
           pytest -v
       - name: Test coverage
         run: |
-          coverage run test_countdown_timer.py
-          coverage report -m
-          coverage html
+          pytest --cov=aiContdownTimerDropDownWithName
+          pytest --cov=app --cov-report=html
       - name: Save coverage report as artifact
         uses: actions/upload-artifact@v2
         with:
