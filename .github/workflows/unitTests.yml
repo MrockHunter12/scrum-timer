@@ -46,7 +46,7 @@ jobs:
         id: html_preview
         uses: pavi2410/html-preview-action@v2 # NOTE: replace with the latest version of this Action
         with:
-          html_file: 'index.html'
+          html_file: 'htmlcov/index.html'
       - uses: github-actions-up-and-running/pr-comment@v1.0.0
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
