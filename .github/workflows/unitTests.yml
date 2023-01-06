@@ -49,6 +49,4 @@ jobs:
           junit_files: "test_results.xml"
       - name: Create or update coverage report file
         run: |
-          cp htmlcov/index.html coverage-report.html
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -X GET https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/coverage-report/index.html > coverage-report.html
