@@ -42,8 +42,12 @@ jobs:
         with:
           name: coverage-report
           path: htmlcov/*
-      - name: HTML Preview
+      - name: Get HTML preview link
         id: html_preview
-        uses: pavi2410/html-preview-action@v2
+        uses: pavi2410/html-preview-action@v2 # NOTE: replace with the latest version of this Action
         with:
           html_file: 'index.html'
+      - uses: github-actions-up-and-running/pr-comment@v1.0.0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          message: ${{ format('[Click here to preview HTML page in browser]({0})', steps.html_preview.outputs.url) }}
