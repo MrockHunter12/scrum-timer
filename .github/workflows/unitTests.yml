@@ -48,8 +48,7 @@ jobs:
         with:
           junit_files: "test_results.xml"
       - name: Create or update coverage report file
-        uses: actions/create-or-update-file@v1
-        with:
-          path: coverage-report.html
-          content: |
-            $(cat htmlcov/index.html)
+        run: |
+          cp htmlcov/index.html coverage-report.html
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
