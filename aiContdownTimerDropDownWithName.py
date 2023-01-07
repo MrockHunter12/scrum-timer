@@ -149,6 +149,8 @@ class CountdownTimer:
     
     def calculateNewIntervalAndUpdateTimerInSeconds(self):
         self.interval = int(math.floor(self.countdown_seconds/ self.numberOfNamesLeft))
+        if self.interval < 0:
+            raise ValueError("Calculated interval is negative")
         self.intervalTimerInSeconds = self.interval
 
     def checkboxEvaluation(self, checkboxVariables, checkboxes):

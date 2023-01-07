@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        python-version: ["3.10"]
 
     steps:
       - uses: actions/checkout@v3
@@ -20,6 +20,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install flake8 pytest
+          pip install pytest-cov
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Lint with flake8
         run: |
@@ -31,4 +32,21 @@ jobs:
         run: sudo apt-get install -y xvfb
       - name: Test with pytest
         run: |
-          pytest
+          pytest --junitxml=test_results.xml
+      - name: Test coverage
+        run: |
+          pytest --cov=aiContdownTimerDropDownWithName
+          pytest --cov=aiContdownTimerDropDownWithName --cov-report=html --cov-fail-under=80
+      - name: Save coverage report as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage-report
+          path: htmlcov/*
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          junit_files: "test_results.xml"
+      - name: Create or update coverage report file
+        run: |
+          curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -X GET https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/coverage-report/index.html > coverage-report.html
