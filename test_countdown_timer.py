@@ -240,10 +240,12 @@ class TestCountdownTimer(unittest.TestCase):
         self.countdown_timer.checkboxEvaluation = MagicMock(return_value=["Alice", "Bob"])
         self.countdown_timer.validateHoursInput = MagicMock(return_value=1)
         self.countdown_timer.validateMinutesInput = MagicMock(return_value=0)
+        self.countdown_timer.hours_entry.get=MagicMock(return_value=1)
+        self.countdown_timer.minutes_entry.get=MagicMock(return_value=0)
         self.countdown_timer.update_timer = MagicMock()
         self.countdown_timer.enableNextAndPreviousButtons = MagicMock()
         # Set the countdown_seconds to a non-zero value
-        self.countdown_timer.countdown_seconds = 3600
+        #self.countdown_timer.countdown_seconds = 3600
         self.countdown_timer.start()
 
         # Verify that the start button is disabled
@@ -258,7 +260,7 @@ class TestCountdownTimer(unittest.TestCase):
         # Verify that update_timer is called
         self.countdown_timer.update_timer.assert_called_once()
         # Verify that the number of names left is set correctly
-        self.assertEqual(self.countdown_timer.numberOfNamesLeft, 0)
+        self.assertEqual(self.countdown_timer.numberOfNamesLeft, 2)
         # Verify that the interval is calculated correctly
         self.assertEqual(self.countdown_timer.interval, 1800)
         self.assertEqual(self.countdown_timer.intervalTimerInSeconds, 1800)
