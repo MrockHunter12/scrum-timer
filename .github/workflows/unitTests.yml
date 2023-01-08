@@ -38,15 +38,17 @@ jobs:
           pytest --cov=aiContdownTimerDropDownWithName
           pytest --cov=aiContdownTimerDropDownWithName --cov-report=html --cov-fail-under=80
       - name: Pytest report
-        uses: actions/upload-artifact@v2
-        with:
-          name: coverage-report
-          path: htmlcov/*
+        always:
+          uses: actions/upload-artifact@v2
+          with:
+            name: coverage-report
+            path: htmlcov/*
       - name: Static Code Analysis
         run: |
           bandit -c bandit.yaml -r --output report.json --format json .
       - name: Bandit report
-        uses: actions/upload-artifact@v2
-        with:
-          name: report.json
-          path: report.json
+        always:
+          uses: actions/upload-artifact@v2
+          with:
+            name: report.json
+            path: report.json
