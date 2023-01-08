@@ -37,16 +37,16 @@ jobs:
         run: |
           pytest --cov=aiContdownTimerDropDownWithName
           pytest --cov=aiContdownTimerDropDownWithName --cov-report=html --cov-fail-under=80
-      - name: Save coverage report as artifact
+      - name: Pytest report
         uses: actions/upload-artifact@v2
         with:
           name: coverage-report
           path: htmlcov/*
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
-        with:
-          junit_files: "test_results.xml"
-      - name: Create or update coverage report file
+      - name: Static Code Analysis
         run: |
-          curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -X GET https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/coverage-report/index.html > coverage-report.html
+          bandit -c bandit.yaml -r --output report.json --format json .
+      - name: Bandit report
+        uses: actions/upload-artifact@v2
+        with:
+          name: report.json
+          path: report.json
