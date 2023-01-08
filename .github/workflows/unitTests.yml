@@ -40,15 +40,15 @@ jobs:
       - name: Static Code Analysis
         run: |
           bandit -c bandit.yaml -r --output report.json --format json .
-      - name: Upload reports
-        always:
-          - name: Upload JSON report
-            uses: actions/upload-artifact@v2
-            with:
-              name: report.json
-              path: report.json
-          - name: Pytest report
-            uses: actions/upload-artifact@v2
-            with:
-              name: coverage-report
-              path: htmlcov/*
+      - name: Upload JSON report
+        if: always()
+        uses: actions/upload-artifact@v2
+          with:
+            name: report.json
+            path: report.json
+       - name: Pytest report
+         if: always()
+         uses: actions/upload-artifact@v2
+           with:
+             name: coverage-report
+             path: htmlcov/*
