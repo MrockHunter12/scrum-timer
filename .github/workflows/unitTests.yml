@@ -46,9 +46,9 @@ jobs:
         with:
           name: report.json
           path: report.json
-       - name: Pytest report
-         if: always()
-         uses: actions/upload-artifact@v2
-         with:
+      - name: Pytest report
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
           name: coverage-report
           path: htmlcov/*
