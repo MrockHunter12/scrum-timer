@@ -81,7 +81,7 @@ class TestCountdownTimer(unittest.TestCase):
     
     def test_load_names(self):
         self.countdown_timer.load_names("names.txt")
-        self.assertEqual(self.countdown_timer.names, ["Uros", "Petar", "Felix", "Anica", "Igor"])
+        self.assertEqual(self.countdown_timer.names, ["Zeliko", "Uros", "Sena", "Petar", "Matthias", "Marko", "Igor", "Eimen", "Anica", "Felix"])
 
     def test_update_timer(self):
         self.label = Mock()
