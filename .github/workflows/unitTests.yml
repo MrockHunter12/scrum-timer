@@ -46,9 +46,27 @@ jobs:
         with:
           name: report.json
           path: report.json
-      - name: Pytest report
+      - name: Upload Pytest report
         if: always()
         uses: actions/upload-artifact@v2
         with:
           name: coverage-report
           path: htmlcov/*
+  create-exe:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+      - name: Install pyinstaller
+        run: pip install pyinstaller
+      - name: Build executable
+        run: pyinstaller aiContdownTimerDropDownWithName.py --onefile --windowed
+      - name: Upload executable
+        uses: actions/upload-artifact@v2
+        with:
+          name: bin
+          path: dist/*
+

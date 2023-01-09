@@ -62,7 +62,7 @@ class CountdownTimer:
         # Create the minutes drop-down menu
         self.minutes_entry = tk.StringVar(self.input_frame)
         self.minutes_entry.set("15") # default value
-        self.minutes_menu = tk.OptionMenu(self.input_frame, self.minutes_entry, "1", "2", "3" ,"4", "5", "15", "30", "45")
+        self.minutes_menu = tk.OptionMenu(self.input_frame, self.minutes_entry, "0", "1", "2", "3" ,"4", "5", "15", "30", "45")
         self.minutes_menu.pack(side="left")
 
         # Modify the style of the OptionMenu widgets to a dark mode theme
@@ -332,7 +332,7 @@ if __name__ == "__main__":
 
     main_window.title("M262 Motion Timer")
     main_window.minsize(200, 70)
-    main_window.maxsize(300, 520)
+    main_window.maxsize(300, 540)
     main_window.attributes("-topmost", True)
     main_window.configure(bg=darkGrayCoroCode)
     main_window.resizable(True, True)
