@@ -37,10 +37,6 @@ jobs:
         run: |
           pytest --cov=aiContdownTimerDropDownWithName
           pytest --cov=aiContdownTimerDropDownWithName --cov-report=html --cov-fail-under=80
-      - name: Package Application
-        uses: JackMcKew/pyinstaller-action-windows@main
-        with:
-          path: .
       - name: Static Code Analysis
         run: |
           bandit -c bandit.yaml -r --output report.json --format json .
@@ -56,8 +52,21 @@ jobs:
         with:
           name: coverage-report
           path: htmlcov/*
-      - name: Upload windows executable
+  create-exe:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+      - name: Install pyinstaller
+        run: pip install pyinstaller
+      - name: Build executable
+        run: pyinstaller myscript.py --onefile --windowed
+      - name: Upload executable
         uses: actions/upload-artifact@v2
         with:
           name: bin
-          path: dist/windows
+          path: dist/*
+
