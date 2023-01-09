@@ -63,7 +63,7 @@ jobs:
       - name: Install pyinstaller
         run: pip install pyinstaller
       - name: Build executable
-        run: pyinstaller myscript.py --onefile --windowed
+        run: pyinstaller aiContdownTimerDropDownWithName.py --onefile --windowed
       - name: Upload executable
         uses: actions/upload-artifact@v2
         with:
