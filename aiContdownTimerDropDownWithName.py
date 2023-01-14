@@ -4,6 +4,7 @@ import time
 import math
 import os
 from tkinter import messagebox
+import configparser
 
 class CountdownTimer:
     def __init__(self, parent):
@@ -11,6 +12,7 @@ class CountdownTimer:
         self.timeIsCloseToFinish = False
         self.main_window = parent
         self.verifiedNames=[]
+        self.filePathToTimerstIni=os.path.join(os.getcwd(), 'timers.ini')
         self.darkGrayCoroCode= "#333"
         self.lightGreenColorCode = "#4caf50"
         self.blueColorCode = "#2196f3"
@@ -54,7 +56,6 @@ class CountdownTimer:
         # Create the hours text input
         self.hours_entry = tk.StringVar(self.input_frame)
         self.hours_entry.set("0") # default value
-        #self.hours_text = tk.Entry(self.input_frame, textvariable=self.hours_entry)
         self.hours_text = tk.Entry(self.input_frame, textvariable=self.hours_entry, width=5,bg=self.darkGrayCoroCode,fg='white')
         self.hours_text.pack(side="left")
 
@@ -64,8 +65,32 @@ class CountdownTimer:
         self.minutes_entry = tk.StringVar(self.input_frame)
         self.minutes_entry.set("0") # default value
         self.minutes_text = tk.Entry(self.input_frame, textvariable=self.minutes_entry,width=5,bg=self.darkGrayCoroCode,fg='white')
-        self.minutes_text.pack(side="left")
+        self.minutes_text.pack(side="left",padx=10)
 
+         # Create the input frame
+        self.dropFrame = tk.Frame(self.main_window, bg=self.darkGrayCoroCode, bd=5)
+        self.dropFrame.pack(fill="x", padx=10, pady=5)
+
+        self.load_timers(self.filePathToTimerstIni)
+        # Create a variable to store the selected preconfigured time
+        self.selected_time = tk.StringVar(self.input_frame)
+        self.selected_time.set(self.preconfigured_times[0][0])
+
+        # Create the dropdown menu
+        self.time_options = tk.OptionMenu(self.dropFrame, self.selected_time, *[time[0] for time in self.preconfigured_times])
+        self.time_options.pack(side="bottom",padx=10, pady=5)
+
+        self.time_options.config(bg=self.darkGrayCoroCode)
+        self.time_options["menu"].config(bg=self.darkGrayCoroCode)
+
+        self.time_options.config(fg='white')
+        self.time_options["menu"].config(fg='white')
+
+        # Set a default value for the dropdown menu
+        self.selected_time.set(self.preconfigured_times[0][0])
+
+        # Bind the function to the dropdown menu
+        self.selected_time.trace('w', self.update_time)
 
         # Create the control frame
         self.control_frame = tk.Frame(self.main_window, bg=self.darkGrayCoroCode, bd=5)
@@ -85,6 +110,10 @@ class CountdownTimer:
 
         self.createCheckBoxes()
 
+        self.select_all_var = tk.IntVar()
+        self.select_all_checkbox = tk.Checkbutton(self.main_window, text="Select/Unselect All", variable=self.select_all_var, font=("Arial", 10), bg=self.darkGrayCoroCode,fg="gray", command=self.select_all)
+        self.select_all_checkbox.pack()
+
         # Create the countdown variables
         self.remaining_seconds = 0
         self.countdown_seconds = 0
@@ -95,6 +124,21 @@ class CountdownTimer:
         self.interval = 0
         self.countdown_running = False
         self.firstExecution = True
+
+    def update_time(self, *args):
+        selected = self.selected_time.get()
+        # Iterate through the preconfigured times
+        for time in self.preconfigured_times:
+            if time[0] == selected:
+                # Update the hours and minutes input fields
+                self.hours_entry.set(time[1])
+                self.minutes_entry.set(time[2])
+
+    def select_all(self):
+        is_checked = self.select_all_var.get()
+        for var in self.checkBoxVariables:
+            var.set(is_checked)
+
 
     def createCheckBoxes(self):
         self.checkboxes = []
@@ -116,6 +160,20 @@ class CountdownTimer:
         """Load names from a text file and store them in a list"""
         with open(filepath, "r") as f:
             self.names = [line.strip() for line in f]
+
+    def load_timers(self, filepath):
+        config = configparser.ConfigParser()
+        config.read(filepath)
+        """Load timers from ini file and store them in a list"""
+        self.preconfigured_times = []
+        # Iterate through the sections in the ini file
+        for section in config.sections():
+            # Get the name, hours, and minutes from the section
+            name = section
+            hours = config[section]['hours']
+            minutes = config[section]['minutes']
+            # Add the preconfigured time to the list
+            self.preconfigured_times.append((name, hours, minutes))
 
     def updateSubTimers(self):
         self.updateTimer(self.interval, self.timerPerNameAvgInSeconds)
@@ -330,7 +388,7 @@ if __name__ == "__main__":
 
     main_window.title("M262 Motion Timer")
     main_window.minsize(200, 70)
-    main_window.maxsize(300, 540)
+    #main_window.maxsize(300, 540)
     main_window.attributes("-topmost", True)
     main_window.configure(bg=darkGrayCoroCode)
     main_window.resizable(True, True)
