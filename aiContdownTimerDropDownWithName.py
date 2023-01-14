@@ -48,24 +48,24 @@ class CountdownTimer:
 
         # Create the input frame
         self.input_frame = tk.Frame(self.main_window, bg=self.darkGrayCoroCode, bd=5)
-        self.input_frame.pack(fill="x", padx=10, pady=5)
+        self.input_frame.pack(fill="x", padx=10, pady=5,anchor=tk.CENTER)
 
         # Create the input labels
-        tk.Label(self.input_frame, text="Hours:", font=("Arial", 14), bg=self.darkGrayCoroCode, fg="white").pack(side="left",padx=10)
+        tk.Label(self.input_frame, text="Hours:", font=("Arial", 14), bg=self.darkGrayCoroCode, fg="white").pack()
 
         # Create the hours text input
         self.hours_entry = tk.StringVar(self.input_frame)
         self.hours_entry.set("0") # default value
         self.hours_text = tk.Entry(self.input_frame, textvariable=self.hours_entry, width=5,bg=self.darkGrayCoroCode,fg='white')
-        self.hours_text.pack(side="left")
+        self.hours_text.pack(anchor=tk.CENTER)
 
-        tk.Label(self.input_frame, text="Minutes:", font=("Arial", 14), bg=self.darkGrayCoroCode, fg="white").pack(side="left",padx=10)
+        tk.Label(self.input_frame, text="Minutes:", font=("Arial", 14), bg=self.darkGrayCoroCode, fg="white").pack()
 
         # Create the minutes text input
         self.minutes_entry = tk.StringVar(self.input_frame)
         self.minutes_entry.set("0") # default value
         self.minutes_text = tk.Entry(self.input_frame, textvariable=self.minutes_entry,width=5,bg=self.darkGrayCoroCode,fg='white')
-        self.minutes_text.pack(side="left",padx=10)
+        self.minutes_text.pack(padx=10,anchor=tk.CENTER)
 
          # Create the input frame
         self.dropFrame = tk.Frame(self.main_window, bg=self.darkGrayCoroCode, bd=5)
@@ -98,15 +98,15 @@ class CountdownTimer:
 
         # Create the start button
         self.start_button = tk.Button(self.control_frame, text="Start", width=10, command=self.start, font=("Arial", 7), bg=self.lightGreenColorCode, fg="white")
-        self.start_button.pack(side="left", padx=10)
+        self.start_button.pack(fill="x", padx=10)
         
         # Create the pause button
         self.pause_button = tk.Button(self.control_frame, text="Pause", width=10, command=self.pause, state="disabled", font=("Arial", 7), bg=self.blueColorCode, fg="white")
-        self.pause_button.pack(side="left", padx=10)
+        self.pause_button.pack(fill="x", padx=10)
 
         # Create the reset button
         self.reset_button = tk.Button(self.control_frame, text="Reset", width=10, command=self.reset, state="disabled", font=("Arial", 7), bg=self.redColorCode, fg="white")
-        self.reset_button.pack(side="left", padx=10)
+        self.reset_button.pack(fill="x", padx=10)
 
         self.createCheckBoxes()
 
@@ -149,7 +149,7 @@ class CountdownTimer:
             for name in self.names:
                 var = tk.IntVar() 
                 checkbox = tk.Checkbutton(self.main_window, text=name, variable=var, font=("Arial", 10), bg=self.darkGrayCoroCode,fg="gray")
-                checkbox.pack()
+                checkbox.pack(fill="x")
                 self.checkboxes.append(checkbox)
                 var.set(1)  # set the initial value of the IntVar variable to 1
                 self.checkBoxVariables.append(var)
@@ -241,6 +241,7 @@ class CountdownTimer:
             
             
     def start(self):
+        self.main_window.geometry("270x200")
         self.firstExecution = True
         self.verifiedNames = []
         self.verifiedNames = self.checkboxEvaluation(self.checkBoxVariables, self.checkboxes)
@@ -388,7 +389,7 @@ if __name__ == "__main__":
 
     main_window.title("M262 Motion Timer")
     main_window.minsize(200, 70)
-    #main_window.maxsize(300, 540)
+    main_window.maxsize(300, 730)
     main_window.attributes("-topmost", True)
     main_window.configure(bg=darkGrayCoroCode)
     main_window.resizable(True, True)
