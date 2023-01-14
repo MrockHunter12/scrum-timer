@@ -49,25 +49,23 @@ class CountdownTimer:
         self.input_frame.pack(fill="x", padx=10, pady=5)
 
         # Create the input labels
-        tk.Label(self.input_frame, text="Hours:", font=("Arial", 14), bg=self.darkGrayCoroCode, fg="white").pack(side="left")
+        tk.Label(self.input_frame, text="Hours:", font=("Arial", 14), bg=self.darkGrayCoroCode, fg="white").pack(side="left",padx=10)
 
-        # Create the hours drop-down menu
+        # Create the hours text input
         self.hours_entry = tk.StringVar(self.input_frame)
         self.hours_entry.set("0") # default value
-        self.hours_menu = tk.OptionMenu(self.input_frame, self.hours_entry, "0", "1", "2", "3", "4", "5")
-        self.hours_menu.pack(side="left")
+        #self.hours_text = tk.Entry(self.input_frame, textvariable=self.hours_entry)
+        self.hours_text = tk.Entry(self.input_frame, textvariable=self.hours_entry, width=5,bg=self.darkGrayCoroCode,fg='white')
+        self.hours_text.pack(side="left")
 
-        tk.Label(self.input_frame, text="Minutes:", font=("Arial", 14), bg=self.darkGrayCoroCode, fg="white").pack(side="left")
+        tk.Label(self.input_frame, text="Minutes:", font=("Arial", 14), bg=self.darkGrayCoroCode, fg="white").pack(side="left",padx=10)
 
-        # Create the minutes drop-down menu
+        # Create the minutes text input
         self.minutes_entry = tk.StringVar(self.input_frame)
-        self.minutes_entry.set("15") # default value
-        self.minutes_menu = tk.OptionMenu(self.input_frame, self.minutes_entry, "0", "1", "2", "3" ,"4", "5", "15", "30", "45")
-        self.minutes_menu.pack(side="left")
+        self.minutes_entry.set("0") # default value
+        self.minutes_text = tk.Entry(self.input_frame, textvariable=self.minutes_entry,width=5,bg=self.darkGrayCoroCode,fg='white')
+        self.minutes_text.pack(side="left")
 
-        # Modify the style of the OptionMenu widgets to a dark mode theme
-        self.hours_menu["menu"].configure(foreground="white", background=self.darkGrayCoroCode)
-        self.minutes_menu["menu"].configure(foreground="white", background=self.darkGrayCoroCode)
 
         # Create the control frame
         self.control_frame = tk.Frame(self.main_window, bg=self.darkGrayCoroCode, bd=5)
